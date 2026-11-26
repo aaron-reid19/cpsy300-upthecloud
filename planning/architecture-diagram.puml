@@ -1,0 +1,76 @@
+@startuml
+title CPSY 300 — Phase 2 Architecture
+left to right direction
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Visitor\nBrowser" as browser
+
+package "Phase 1 — Existing Web App" {
+  component "Container App\nNext.js dashboard\nSystem-assigned identity" as ca
+}
+
+component "Same Phase 1\nGitHub Repository" as repo
+
+package "Phase 2 — Function App\nFlex Consumption\nSystem-assigned identity" {
+  component "insights" as insightsFn
+  component "recipes" as recipesFn
+  component "reviews" as reviewsFn
+  component "processCsv" as processCsv
+  component "storeReview" as storeReview
+}
+
+package "Upload path" {
+  component "Storage Account\nBlob container: uploads\nAll_Diets.csv" as uploads
+  component "Event Grid\nBlob Created subscription\nFilter: uploads/*.csv" as eventgrid
+}
+
+queue "Service Bus\nQueue: reviews" as reviewsQueue
+
+package "Cosmos DB for NoSQL\nDatabase: recipesdb" as cosmos {
+  database "recipes\nPartition key: /diet" as recipes
+  database "insights\nPartition key: /id" as insights
+  database "reviews\nPartition key: /recipeId" as reviews
+}
+
+' Visitor and web app requests
+browser --> ca : HTTPS\nDashboard · Search · Review form
+ca --> insightsFn : Server-side HTTPS\nGET /api/insights
+ca --> recipesFn : Server-side HTTPS\nGET /api/recipes?diet=…&q=…
+ca --> reviewsFn : Server-side HTTPS\nGET /api/reviews
+
+' Review intake
+ca --> reviewsQueue : Review form server action\nsends message
+reviewsQueue --> storeReview : storeReview receives message
+
+' CSV upload processing
+uploads --> eventgrid : Blob Created event
+eventgrid --> processCsv : Webhook invokes processCsv
+
+' Stored data flows
+processCsv --> recipes : Writes recipes
+recipesFn --> recipes : Reads recipes
+processCsv --> insights : Writes insights
+insightsFn --> insights : Reads insights
+storeReview --> reviews : Writes reviews
+reviewsFn --> reviews : Reads reviews
+
+' Managed identity role assignments (dashed arrows)
+ca ..> reviewsQueue : Container App identity\nAzure Service Bus Data Sender
+storeReview ..> reviewsQueue : Function App identity\nAzure Service Bus Data Receiver
+processCsv ..> uploads : Function App identity\nStorage Blob Data Owner\nStorage Queue Data Contributor
+processCsv ..> cosmos : Function App identity\nCosmos DB Built-in Data Contributor
+
+' Same-repository deployment note
+note bottom of repo
+Phase 2 reuses the Phase 1 repository,
+resource group, and Container App.
+deploy.yml ships the web app;
+deploy-api.yml ships the Function App.
+end note
+
+legend bottom
+Solid arrows: application data flow
+Dashed arrows: managed identity role assignments
+endlegend
+@enduml
