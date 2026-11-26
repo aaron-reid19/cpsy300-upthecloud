@@ -16,7 +16,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
   }
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 space-y-4 p-6 text-zinc-900">
+    <main className="mx-auto w-full max-w-xl flex-1 space-y-4 bg-white p-6 text-black">
       <Link className="text-sm underline" href="/recipes">← Search recipes</Link>
       <h1 className="text-2xl font-bold">Review: {name}</h1>
       <p className="text-sm text-zinc-600">Diet: {diet}</p>
@@ -31,13 +31,13 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
           <input type="hidden" name="recipeName" value={name} />
           <input type="hidden" name="diet" value={diet} />
           <label className="flex flex-col text-sm">Rating
-            <select name="rating" required defaultValue="" className="rounded border border-zinc-300 px-2 py-1">
+            <select name="rating" required defaultValue="" className="rounded border border-zinc-300 bg-white px-2 py-1 text-black">
               <option value="" disabled>Choose…</option>
               {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} — {"★".repeat(n)}</option>)}
             </select>
           </label>
           <label className="flex flex-col text-sm">Comment (optional, up to 500 characters)
-            <textarea name="comment" maxLength={500} rows={4} className="rounded border border-zinc-300 px-2 py-1" />
+            <textarea name="comment" maxLength={500} rows={4} className="rounded border border-zinc-300 bg-white px-2 py-1 text-black" />
           </label>
           {error && <p className="text-sm text-red-700">{error}</p>}
           <button className="rounded bg-zinc-900 px-4 py-1.5 text-white">Send review</button>

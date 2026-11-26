@@ -61,7 +61,7 @@ export default function Charts({ insights }: { insights: Insights }) {
         <div className="mb-3 flex flex-wrap items-center gap-3">
           <h2 className="text-lg font-semibold">Most common cuisines for</h2>
           <select
-            className="rounded border border-zinc-300 px-2 py-1"
+            className="rounded border border-zinc-300 bg-white px-2 py-1 text-black"
             value={diet}
             onChange={(e) => setDiet(e.target.value)}
           >
