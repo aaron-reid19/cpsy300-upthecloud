@@ -19,20 +19,20 @@ export default async function Recipes({ searchParams }: PageProps<"/recipes">) {
   const link = (p: number) => `/recipes?${new URLSearchParams({ diet, q, page: String(p) })}`;
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 p-6 text-zinc-900">
+    <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 bg-white p-6 text-black">
       <Link className="text-sm underline" href="/">← Dashboard</Link>
       <h1 className="text-2xl font-bold">Search recipes</h1>
 
       {/* A plain GET form: the search is in the address, so it can be bookmarked and shared. */}
       <form className="flex flex-wrap items-end gap-3" action="/recipes">
         <label className="flex flex-col text-sm">Diet
-          <select name="diet" defaultValue={diet} className="rounded border border-zinc-300 px-2 py-1">
+          <select name="diet" defaultValue={diet} className="rounded border border-zinc-300 bg-white px-2 py-1 text-black">
             <option value="">All diets</option>
             {DIETS.map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
         </label>
         <label className="flex flex-col text-sm">Keyword in the name
-          <input name="q" defaultValue={q} maxLength={50} className="rounded border border-zinc-300 px-2 py-1" />
+          <input name="q" defaultValue={q} maxLength={50} className="rounded border border-zinc-300 bg-white px-2 py-1 text-black" />
         </label>
         <button className="rounded bg-zinc-900 px-4 py-1.5 text-white">Search</button>
       </form>
